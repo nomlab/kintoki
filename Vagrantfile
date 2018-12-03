@@ -12,9 +12,14 @@ Vagrant.configure(2) do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
+  # FIXME
+  # can't get package "linux-source-3.16" in debian-stretch
+  # doesn't use ssh in debian-jessie
+  # config.vm.box = "debian/stretch64"
+  # config.vm.box = "debian/jessie64"
   config.vm.box = "ARTACK/debian-jessie"
   config.vm.box_url = "https://atlas.hashicorp.com/ARTACK/boxes/debian-jessie"
-  
+
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
@@ -27,7 +32,7 @@ Vagrant.configure(2) do |config|
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-   config.vm.network "private_network", ip: "192.168.33.10"
+  # config.vm.network "private_network", ip: "192.168.33.10"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -39,21 +44,44 @@ Vagrant.configure(2) do |config|
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
-  config.vm.synced_folder ".", "/vagrant", disabled: true
+  # config.vm.synced_folder ".", "/vagrant", disabled: true
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
   #
-    config.vm.provider "virtualbox" do |vb|
-  #   # Display the VirtualBox GUI when booting the machine
-  #   vb.gui = true
-  #
+  config.vm.define "target" do |target|
+    target.vm.hostname = "target"
+    target.vm.network "private_network", ip: "192.168.33.10"
+  # Provider-specific configuration so you can fine-tune various
+  # backing providers for Vagrant. These expose provider-specific options.
+  # Example for VirtualBox:
+    target.vm.provider "virtualbox" do |vb_t|
+  # Customize serial console
+      vb_t.customize ["modifyvm", :id, "--uart1", "0x3F8", "4"]
+      vb_t.customize ["modifyvm", :id, "--uartmode1", "tcpserver", "22222"]
   # Customize the amount of memory on the VM:
-      vb.name = "target"
-      vb.memory = "2048"
-      vb.cpus = 4
+      vb_t.memory = "2048"
+      vb_t.memory = "4"
     end
+  # first setting target
+    target.vm.provision "shell", path: "scripts/setup_target.sh"
+  end
+  
+  config.vm.define "observer" do |observer|
+    observer.vm.hostname = "observer"
+    observer.vm.network "private_network", ip: "192.168.33.20"
+  # Provider-specific configuration so you can fine-tune various
+  # backing providers for Vagrant. These expose provider-specific options.
+  # Example for VirtualBox:
+    observer.vm.provider "virtualbox" do |vb_o|
+  # Customize the amount of memory on the VM:
+      vb_o.memory = "2048"
+      vb_o.cpu = "2"
+    end
+  # first setting observer
+    observer.vm.provision "shell", path: "scripts/setup_observer.sh"
+  end
   #
   # View the documentation for the provider you are using for more
   # information on available options.
@@ -72,29 +100,6 @@ Vagrant.configure(2) do |config|
   #   sudo apt-get update
   #   sudo apt-get install -y apache2
   # SHELL
-  config.vm.provision "shell", inline: <<-SHELL
-     sudo apt-get update
-     # Keyboard layout
-     sudo localectl set-keymap jp106
-     setxkbmap jp
-     # editor
-     sudo apt-get install -y emacs
-     sudo apt-get install -y vim
-     # git
-     sudo apt-get install -y git
-     git config --global user.name "Shinra Suzuki"
-     git config --global user.email "suzuki@swlab.cs.okayama-u.ac.jp"
-     git config --global core.editor 'vim -c "set fenc=utf-8"'
-     # for "make menuconfig"
-     sudo apt-get install -y libncurses5-dev
-     # ssh
-     sudo apt-get install -y openssh-server
-     # get linux source code (only target)
-     cd /usr/src
-     sudo apt-get install -y linux-source-3.16
-  #   # GDB (only host)
-  #   sudo apt-get install -y gdb
-  SHELL
   config.vbguest.auto_update = false
   config.vbguest.no_remote = true
 end
