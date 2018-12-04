@@ -15,7 +15,7 @@ Vagrant.configure(2) do |config|
   # FIXME
   # can't get package "linux-source-3.16" in debian-stretch
   # doesn't use ssh in debian-jessie
-  # config.vm.box = "debian/stretch64"
+  config.vm.box = "debian/stretch64"
   # config.vm.box = "debian/jessie64"
   config.vm.box = "ARTACK/debian-jessie"
   config.vm.box_url = "https://atlas.hashicorp.com/ARTACK/boxes/debian-jessie"
@@ -62,7 +62,7 @@ Vagrant.configure(2) do |config|
       vb_t.customize ["modifyvm", :id, "--uartmode1", "tcpserver", "22222"]
   # Customize the amount of memory on the VM:
       vb_t.memory = "2048"
-      vb_t.memory = "4"
+      vb_t.cpus = "4"
     end
   # first setting target
     target.vm.provision "shell", path: "scripts/setup_target.sh"
@@ -77,7 +77,7 @@ Vagrant.configure(2) do |config|
     observer.vm.provider "virtualbox" do |vb_o|
   # Customize the amount of memory on the VM:
       vb_o.memory = "2048"
-      vb_o.cpu = "2"
+      vb_o.cpus = "2"
     end
   # first setting observer
     observer.vm.provision "shell", path: "scripts/setup_observer.sh"
