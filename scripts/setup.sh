@@ -1,13 +1,13 @@
-#! /bin/bash
+#!/bin/bash
 
-export LANG=“ja_JP.UTF-8”
-export TIMEZONE=“Asia/Tokyo”
-export DEBIAN_FRONTEND=“noninteractive”
+export LANG="ja_JP.UTF-8"
+export TIMEZONE="Asia/Tokyo"
+export DEBIAN_FRONTEND="noninteractive"
 
 ################################################################
 ### Setup Timezone
 
-sudo sh -c “echo $TIMEZONE > /etc/timezone”
+sudo sh -c "echo $TIMEZONE > /etc/timezone"
 sudo dpkg-reconfigure -f noninteractive tzdata
 
 ################################################################
