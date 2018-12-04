@@ -15,7 +15,7 @@ Vagrant.configure(2) do |config|
   # FIXME
   # can't get package "linux-source-3.16" in debian-stretch
   # doesn't use ssh in debian-jessie
-  config.vm.box = "debian/stretch64"
+  # config.vm.box = "debian/stretch64"
   # config.vm.box = "debian/jessie64"
   config.vm.box = "ARTACK/debian-jessie"
   config.vm.box_url = "https://atlas.hashicorp.com/ARTACK/boxes/debian-jessie"
