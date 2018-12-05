@@ -75,6 +75,9 @@ Vagrant.configure(2) do |config|
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
     observer.vm.provider "virtualbox" do |vb_o|
+  # Customize serial console
+      vb_o.customize ["modifyvm", :id, "--uart1", "0x3F8", "4"]
+      vb_o.customize ["modifyvm", :id, "--uartmode1", "tcpclient", "localhost:22222"]
   # Customize the amount of memory on the VM:
       vb_o.memory = "2048"
       vb_o.cpus = "2"
